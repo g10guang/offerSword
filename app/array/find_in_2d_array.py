@@ -18,6 +18,8 @@ class Solution:
             缩小矩形规模
         else:
             找到
+        因为矩形的缩小过程中每次都只是抛弃了比 target 小或者大的数，从而使矩形的规模不断缩小
+        那么只要 target 存在矩形中，肯定会被找到
         :param target:
         :param array:
         :return:
