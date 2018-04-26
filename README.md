@@ -6,4 +6,6 @@
 | :--- | :--- | :----: |
 | 数组 | [二维数组中查找](https://www.nowcoder.com/practice/abc3fe2ce8e146608e868a70efebf62e?tpId=13&tqId=11154&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking) | [find_in_2d_array](./app/array/find_in_2d_array.py) |
 | 字符串 | 空格替换 | [replace_space](./string/replace_space.py) |
+| 链表 | 逆序打印链表 | [print_list_reverse](/home/g10guang/gitProjects/offerSword/app/string/replace_space.py) |
+
 
