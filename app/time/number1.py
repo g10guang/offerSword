@@ -54,12 +54,23 @@ class Solution2:
                 self.curOneNum -= 1
 
 
+class Solution3:
+    def NumberOf1Between1AndN_Solution(self, n):
+        cnt = 0
+        m = 1
+        while m <= n:
+            a, b = n // m, n % m
+            cnt += (a + 8) // 10 * m + (b + 1 if a % 10 == 1 else 0)
+            m *= 10
+        return cnt
+
+
 import unittest
 
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        self.s2 = Solution2()
+        self.s2 = Solution3()
         self.s = Solution()
 
     def test_1(self):
@@ -80,6 +91,5 @@ class TestCase(unittest.TestCase):
     def test_4(self):
         n = 100
         expect = self.s.NumberOf1Between1AndN_Solution(n)
-        print('=======')
         r = self.s2.NumberOf1Between1AndN_Solution(n)
         self.assertEqual(expect, r)
