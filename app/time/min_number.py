@@ -20,7 +20,7 @@ class Solution:
         index = 1
         while index < len(s):
             k = index
-            while k > 0 and self.compare(s[k - 1], s[k]):
+            while k > 0 and self.compare2(s[k - 1], s[k]):
                 s[k], s[k - 1] = s[k - 1], s[k]
                 k -= 1
             index += 1
@@ -34,6 +34,12 @@ class Solution:
         long, short = (s, t) if len(s) >= len(t) else (t, s)
         short = short * (len(long) // len(short) + 1)
         return (long > short) if s is long else (short > long)
+
+    def compare2(self, s, t):
+        """
+        比较 s+t 与 t+s 的大小
+        """
+        return s+t > t+s
 
 
 import unittest
