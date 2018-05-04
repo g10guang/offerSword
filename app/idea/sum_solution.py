@@ -40,6 +40,43 @@ class Solution3:
         except ZeroDivisionError:
             return self.result
         self.result += n
-        self.Sum_Solution(n-1)
+        self.Sum_Solution(n - 1)
         return self.result
 
+
+class Solution3:
+    """
+    使用字典映射函数
+    """
+
+    def __init__(self):
+        self.result = 0
+        self.index = 0
+        self.map = {True: self.recursion, False: self.stop}
+
+    def Sum_Solution(self, n):
+        self.result = 0
+        self.index = n
+        self.map[self.index > 0]()
+        return self.result
+
+    def recursion(self):
+        self.result += self.index
+        self.index -= 1
+        self.map[self.index > 0]()
+
+    def stop(self):
+        pass
+
+
+import unittest
+
+
+class TestCase(unittest.TestCase):
+    def setUp(self):
+       self.s = Solution3()
+
+    def test_1(self):
+        n = 1
+        r = self.s.Sum_Solution(n)
+        self.assertEqual(1, r)
