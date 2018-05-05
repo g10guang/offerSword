@@ -37,8 +37,3 @@ class Solution:
                 return
             self.inOrder(node.right)
 
-    def reset(self):
-        self.index = 0
-        self.result = None
-
-
