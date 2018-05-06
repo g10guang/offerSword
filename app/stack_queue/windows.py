@@ -117,15 +117,103 @@ class EmptyQueue(Exception):
     pass
 
 
+class Solution2:
+    """
+    使用双端开口的队列实现
+    """
+
+    def maxInWindows(self, num, size):
+        q = CircleQueue(size)
+        ret = []
+        if len(num) < size or size < 1:
+            return ret
+        for i in range(size - 1):
+            # 将元素的下标而不是元素值加入到队列中
+            while q.len() > 0 and num[q.tailElem()] <= num[i]:
+                q.removeTailElem()
+            q.enqueue(i)
+        for i in range(size - 1, len(num)):
+            x = num[i]
+            while q.len() > 0 and num[q.tailElem()] <= x:
+                q.removeTailElem()
+            q.enqueue(i)
+            ret.append(max(num[q.frontElem()], x))
+            if i - q.frontElem() >= size - 1:
+                q.deque()
+        return ret
+
+
+class CircleQueue:
+    """
+    底层使用数组实现的循环队列
+    队列双端开头，既可以从队头去元素，也可以从队尾取元素
+    """
+
+    def __init__(self, size):
+        self.size = size + 1
+        self.maxLen = self.size - 1
+        self.q = [None] * self.size
+        self.front, self.tail = 0, 0
+
+    def enqueue(self, x):
+        if self.len() == self.maxLen:
+            raise FullQueue
+        self.q[self.tail] = x
+        self.tail = (self.tail + 1) % self.size
+
+    def deque(self):
+        if self.len() == 0:
+            raise EmptyQueue
+        x = self.q[self.front]
+        self.q[self.front] = None
+        self.front = (self.front + 1) % self.size
+        return x
+
+    def len(self):
+        return (self.tail - self.front + self.size) % self.size
+
+    def frontElem(self):
+        if self.len() == 0:
+            raise EmptyQueue
+        return self.q[self.front]
+
+    def tailElem(self):
+        if self.len() == 0:
+            raise EmptyQueue
+        return self.q[self.tail - 1]
+
+    def removeTailElem(self):
+        """
+        移除队尾元素
+        :return:
+        """
+        if self.len() == 0:
+            raise EmptyQueue
+        x = self.q[self.tail - 1]
+        self.tail = (self.tail - 1) % self.size
+        self.q[self.tail] = None
+        return x
+
+
+class FullQueue(Exception):
+    pass
+
+
 import unittest
 
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        self.s = Solution()
+        self.s = Solution2()
 
     def test_1(self):
         nums = [2, 3, 4, 2, 6, 2, 5, 1]
         size = 3
         r = self.s.maxInWindows(nums, size)
         self.assertEqual([4, 4, 6, 6, 6, 5], r)
+
+    def test_2(self):
+        nums = [1, 3, -1, -3, 5, 3, 6, 7]
+        size = 3
+        r = self.s.maxInWindows(nums, size)
+        self.assertEqual([3, 3, 5, 5, 6, 7], r)
