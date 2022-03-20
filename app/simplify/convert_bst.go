@@ -14,7 +14,7 @@ type TreeNode struct {
  * @return TreeNode类
  */
 //  https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&tqId=11179&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking
-func Convert(pRootOfTree *TreeNode) *TreeNode {
+func ConvertWithArray(pRootOfTree *TreeNode) *TreeNode {
 	if pRootOfTree == nil {
 		return nil
 	}
@@ -40,4 +40,37 @@ func Convert(pRootOfTree *TreeNode) *TreeNode {
 		next.Right = nil
 	}
 	return newRoot
+}
+
+/**
+ *
+ * @param pRootOfTree TreeNode类
+ * @return TreeNode类
+ */
+//  https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&tqId=11179&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking
+func Convert(pRootOfTree *TreeNode) *TreeNode {
+	if pRootOfTree == nil {
+		return nil
+	}
+	var prev *TreeNode
+	var inOrder func(node *TreeNode)
+	// 中序遍历，得出有序列表
+	inOrder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		inOrder(node.Left)
+		node.Left = prev
+		if prev != nil {
+			prev.Right = node
+		}
+		prev = node
+		inOrder(node.Right)
+	}
+	inOrder(pRootOfTree)
+	head := pRootOfTree
+	for head.Left != nil {
+		head = head.Left
+	}
+	return head
 }
