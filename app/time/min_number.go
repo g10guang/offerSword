@@ -31,25 +31,8 @@ func PrintMinNumber(numbers []int) string {
 				return true
 			}
 		}
-		if len(x) == len(y) {
-			return true
-		}
-		if len(x) > len(y) {
-			for idx < len(x) && x[idx] == x[idx-1] {
-				idx++
-			}
-			if idx == len(x) {
-				return true
-			}
-			return x[idx] < x[0]
-		}
-		for idx < len(y) && y[idx] == y[idx-1] {
-			idx++
-		}
-		if idx == len(y) {
-			return true
-		}
-		return y[idx] > x[0]
+		// 具体哪个小，拼起来比较一下，思路比较清晰
+		return x+y < y+x
 	})
 	notZeroIdx := -1
 	for i, str := range strs {
