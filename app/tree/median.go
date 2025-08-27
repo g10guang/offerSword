@@ -5,90 +5,110 @@ import (
 	"fmt"
 )
 
+var bigHeap = &intHeap{
+    max: true,
+}
+var smallHeap = &intHeap{
+    max: false,
+}
+
+func Insert(num int){
+    defer func() {
+        fmt.Printf("[Insert] num=%d bigHeap=%v smallHeap=%v\n", num, bigHeap.data, smallHeap.data)
+    }()
+    rebalanceFn := func() {
+        if smallHeap.Len() > bigHeap.Len() {
+            // 预期 bigHeap 更长
+            n := heap.Pop(smallHeap)
+            heap.Push(bigHeap, n)
+        }
+
+        if bigHeap.Len() > smallHeap.Len() + 1 {
+            n := bigHeap.Pop()
+            smallHeap.Push(n)
+        }
+
+        if bigHeap.Len() > 0 && smallHeap.Len() > 0 && bigHeap.Top() > smallHeap.Top() {
+            // 交换刚刚写入的元素
+            v := heap.Pop(bigHeap)
+            heap.Push(smallHeap, v)
+            v = heap.Pop(smallHeap)
+            heap.Push(bigHeap, v)
+        }
+    }
+    if bigHeap.Len() == 0 {
+        heap.Push(bigHeap, num)
+        return 
+    }
+
+    if smallHeap.Len() == 0 {
+        heap.Push(smallHeap, num)
+        rebalanceFn()
+        return 
+    }
+
+    st := smallHeap.Top()
+    if num >= st {
+        heap.Push(smallHeap, num)
+    } else {
+        heap.Push(smallHeap, num)
+    }
+
+    rebalanceFn()
+}
+
+func GetMedian() (m float64) {
+    defer func() {
+        fmt.Printf("[GetMedian] m=%v bigHeap=%v smallHeap=%v\n", m, bigHeap.data, smallHeap.data)
+    }()
+    
+    if bigHeap.Len() == 0 {
+        return float64(0)
+    }
+
+	if bigHeap.Len() == smallHeap.Len() {
+
+        return ( float64(bigHeap.Top()) + float64(smallHeap.Top()) )  / 2
+    }
+
+    return float64(bigHeap.Top())
+}
+
 type intHeap struct {
-	maxHeap bool
-	data    []int
+    data []int 
+    max bool 
 }
 
-func (h intHeap) Len() int {
-	return len(h.data)
+func (h *intHeap) Less(i, j int) bool {
+    if h.max {
+        // 大顶堆，最大的放在头部，其他都比它小
+        return h.data[i] > h.data[j]
+    }
+
+    // 小顶堆，最小的放在头部，其他都比它大
+    return h.data[i] < h.data[j]
 }
 
-func (h intHeap) Less(i, j int) bool {
-	if h.maxHeap {
-		// max heap
-		return h.data[i] > h.data[j]
-	}
-	// mix heap
-	return h.data[i] < h.data[j]
+func (h *intHeap) Len() int {
+    return len(h.data)
 }
 
-func (h intHeap) Swap(i, j int) {
-	h.data[i], h.data[j] = h.data[j], h.data[i]
+func (h *intHeap) Swap(i, j int) {
+    h.data[i], h.data[j] = h.data[j], h.data[i]
 }
 
 func (h *intHeap) Push(x interface{}) {
-	h.data = append(h.data, x.(int))
+    v := x.(int)
+    h.data = append(h.data, v)
 }
 
 func (h *intHeap) Pop() interface{} {
-	n := h.data[h.Len()-1]
-	h.data = h.data[:h.Len()-1]
-	return n
+    // pop 尾部
+    v := h.data[len(h.data)-1]
+    h.data = h.data[:len(h.data)-1]
+    return v 
 }
 
-func (h intHeap) top() int {
-	return h.data[0]
-}
-
-var maxHeap = &intHeap{maxHeap: true}
-var minHeap = &intHeap{maxHeap: false}
-var cnt int
-
-func Insert(num int) {
-	fmt.Printf("maxHeap=%v minHeap=%v cnt=%d num=%d median=%f\n",
-		maxHeap.data, minHeap.data, cnt, num, GetMedian())
-	cnt++
-	// maxHeap maintain the small side nums
-	// minHeap maintain the big side nums
-	// insert into maxHeap first
-	if maxHeap.Len() == 0 {
-		heap.Push(maxHeap, num)
-		return
-	}
-
-	maxTop := maxHeap.top()
-
-	if num > maxTop {
-		// insert into minHeap
-		heap.Push(minHeap, num)
-		// rebalance
-		for minHeap.Len() > maxHeap.Len() {
-			v := heap.Pop(minHeap)
-			heap.Push(maxHeap, v)
-		}
-	} else {
-		// insert into maxHeap
-		heap.Push(maxHeap, num)
-		for maxHeap.Len() > minHeap.Len() {
-			v := heap.Pop(maxHeap)
-			heap.Push(minHeap, v)
-		}
-	}
-}
-
-func GetMedian() float64 {
-	if maxHeap.Len() == 0 && minHeap.Len() == 0 {
-		return 0
-	}
-
-	if maxHeap.Len() > minHeap.Len() {
-		return float64(maxHeap.top())
-	}
-
-	if minHeap.Len() > maxHeap.Len() {
-		return float64(minHeap.top())
-	}
-
-	return float64(maxHeap.top()+minHeap.top()) / 2
+func (h *intHeap) Top() int {
+    return h.data[0]
 }
