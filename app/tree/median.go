@@ -24,8 +24,8 @@ func Insert(num int){
         }
 
         if bigHeap.Len() > smallHeap.Len() + 1 {
-            n := bigHeap.Pop()
-            smallHeap.Push(n)
+            n := heap.Pop(bigHeap)
+            heap.Push(smallHeap, n)
         }
 
         if bigHeap.Len() > 0 && smallHeap.Len() > 0 && bigHeap.Top() > smallHeap.Top() {
@@ -36,6 +36,8 @@ func Insert(num int){
             heap.Push(bigHeap, v)
         }
     }
+
+    defer rebalanceFn()
     if bigHeap.Len() == 0 {
         heap.Push(bigHeap, num)
         return 
@@ -43,7 +45,6 @@ func Insert(num int){
 
     if smallHeap.Len() == 0 {
         heap.Push(smallHeap, num)
-        rebalanceFn()
         return 
     }
 
@@ -53,8 +54,6 @@ func Insert(num int){
     } else {
         heap.Push(smallHeap, num)
     }
-
-    rebalanceFn()
 }
 
 func GetMedian() (m float64) {
