@@ -1,58 +1,59 @@
 package main
 
+import "fmt"
+
 /**
+ * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+ *
  *
  * @param num int整型一维数组
  * @param size int整型
  * @return int整型一维数组
  */
-func maxInWindows(nums []int, size int) []int {
-	// https://www.nowcoder.com/share/jump/14730551684072631718
-	var result []int
-	if len(nums) == 0 || len(nums) < size || size <= 0 {
-		return result
-	}
+func maxInWindows(num []int, size int) []int {
+    if len(num) == 0 || size <= 0 {
+        return nil
+    }
+    if size == 1 {
+        return num
+    }
 
-	var queue []int
-	// init
-	for idx := 0; idx < size-1; idx++ {
-		val := nums[idx]
+	var queueIdx []int
+	var ret []int
 
-		// drop smaller than current val
-		dropIdx := len(queue) - 1
-		for dropIdx >= 0 && nums[queue[dropIdx]] < val {
-			dropIdx--
+	for i := 0; i < len(num); i++ {
+		if len(queueIdx) == 0 {
+			queueIdx = append(queueIdx, i)
+			continue
 		}
-		queue = queue[:dropIdx+1]
-		queue = append(queue, idx)
-	}
 
-	// process
-	for start := 0; start+size-1 < len(nums); start++ {
-		end := start + size - 1
-		val := nums[end]
-		{
-			// drop old index
-			dropIdx := 0
-			for dropIdx < len(queue) && queue[dropIdx] < start {
-				dropIdx++
+		// 向后收缩
+		dropLeftIdx := -1
+		for j, q := range queueIdx {
+			if i-q+1 > size || num[q] <= num[i] {
+				dropLeftIdx = j
+			} else {
+				break
 			}
-			queue = queue[dropIdx:]
 		}
+		// 向前收缩
+        dropRightIdx := len(queueIdx)
+        for j := len(queueIdx)-1; j >= 0 && j > dropLeftIdx; j-- {
+            if num[queueIdx[j]] <= num[i] {
+                dropRightIdx = j
+            } else {
+                break
+            }
+        }
+        fmt.Printf("[maxInWindows] i=%d num=%d dropLeftIdx=%d queueIdx=%v\n", 
+            i, num[i], dropLeftIdx, queueIdx)
+		queueIdx = queueIdx[dropLeftIdx+1:dropRightIdx]
+		queueIdx = append(queueIdx, i)
 
-		{
-			// drop smaller than current val
-			dropIdx := len(queue) - 1
-			for dropIdx >= 0 && nums[queue[dropIdx]] < val {
-				dropIdx--
-			}
-			queue = queue[:dropIdx+1]
+		if i+1 >= size {
+			ret = append(ret, num[queueIdx[0]])
 		}
-
-		queue = append(queue, end)
-
-		result = append(result, nums[queue[0]])
 	}
 
-	return result
+	return ret
 }
